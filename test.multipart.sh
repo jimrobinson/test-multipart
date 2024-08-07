@@ -103,7 +103,7 @@ echo "${aws[@]}" s3api create-multipart-upload --bucket "${bucket}" --key "${key
 upload_id=$("${aws[@]}" s3api create-multipart-upload --bucket "${bucket}" --key "${key}" --checksum-algorithm "${algorithm}" | tee /dev/tty | jq -r .UploadId);
 
 # install cleanup handler
-trap '"${aws[@]}" s3api create-multipart-upload --bucket "${bucket}" --key "${key}" --upload-id "${upload_id}"' QUIT
+trap '"${aws[@]}" s3api abort-multipart-upload --bucket "${bucket}" --key "${key}" --upload-id "${upload_id}" 1>/dev/null 2>/dev/null' QUIT
 
 # upload a single part and ask the SDK to calculate the checksum
 echo "${aws[@]}" s3api upload-part --bucket "${bucket}" --key "${key}" --part-number 1 --upload-id "${upload_id}" --body "${source}" --checksum-algorithm "${algorithm}";
